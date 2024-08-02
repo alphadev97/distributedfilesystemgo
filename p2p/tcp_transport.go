@@ -88,6 +88,9 @@ func (t *TCPTransport) handleConn(conn net.Conn) {
 			fmt.Printf("TVCP error: %s\n", err)
 			continue
 		}
+
+		msg.From = conn.RemoteAddr()
+
 		fmt.Printf("message: %+v\n", msg)
 	}
 }
