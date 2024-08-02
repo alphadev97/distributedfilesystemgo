@@ -1,9 +1,22 @@
 package main
 
 import (
-	"fmt"
+	"log"
+
+	"github.com/alphadev97/distributedfilesystemgo/p2p"
 )
 
 func main() {
-	fmt.Println("ohhhh, Here we go again.")
+	tcpOpts := p2p.TCPTransportOpts{
+		ListenAddr:    ":3000",
+		HandshakeFunc: p2p.NOPHandshakeFunc,
+		Decoder:       p2p.DefaultDecoder{},
+	}
+	tr := p2p.NewTCPTransport(tcpOpts)
+
+	if err := tr.ListenAndAccept(); err != nil {
+		log.Fatal(err)
+	}
+
+	select {}
 }
