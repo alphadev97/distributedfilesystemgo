@@ -2,6 +2,7 @@ package p2p
 
 import (
 	"fmt"
+	"log"
 	"net"
 )
 
@@ -46,9 +47,10 @@ func NewTCPTransport(opts TCPTransportOpts) *TCPTransport {
 	}
 }
 
-// Consume implements the Transport interface,
+// NOTE Consume implements the Transport interface,
 // which will return read only channel, for reading the incoming
 // messages recieved from another peer in the network
+
 func (t *TCPTransport) Consume() <-chan RPC {
 	return t.rpcch
 }
@@ -63,6 +65,8 @@ func (t *TCPTransport) ListenAndAccept() error {
 	}
 
 	go t.startAcceptLoop()
+
+	log.Printf("TCP transport listning on port: %s\n", t.ListenAddr)
 
 	return nil
 
