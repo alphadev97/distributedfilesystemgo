@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/alphadev97/distributedfilesystemgo/p2p"
 )
@@ -37,6 +38,12 @@ func (s *FileServer) Stop() {
 }
 
 func (s *FileServer) loop() {
+
+	defer func() {
+		log.Println("file server stopped due to user quit action")
+		s.Transport.Close()
+	}()
+
 	for {
 		select {
 		case msg := <-s.Transport.Consume():
