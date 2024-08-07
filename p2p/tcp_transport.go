@@ -62,6 +62,20 @@ func (t *TCPTransport) Close() error {
 	return t.listener.Close()
 }
 
+// NOTE Dial implements the Transport interface
+
+func (t *TCPTransport) Dial(addr string) error {
+	conn, err := net.Dial("tcp", addr)
+	if err != nil {
+		return err
+	}
+
+	go t.handleConn(conn, true)
+
+	return nil
+
+}
+
 func (t *TCPTransport) ListenAndAccept() error {
 
 	var err error
@@ -92,13 +106,13 @@ func (t *TCPTransport) startAcceptLoop() {
 		}
 
 		fmt.Printf("new incoming cnnection %+v\n", conn)
-		go t.handleConn(conn)
+		go t.handleConn(conn, false)
 	}
 }
 
 type Temp struct{}
 
-func (t *TCPTransport) handleConn(conn net.Conn) {
+func (t *TCPTransport) handleConn(conn net.Conn, outbound bool) {
 
 	var err error
 
@@ -107,7 +121,7 @@ func (t *TCPTransport) handleConn(conn net.Conn) {
 		conn.Close()
 	}()
 
-	peer := NewTCPPeer(conn, true)
+	peer := NewTCPPeer(conn, outbound)
 
 	if err = t.HandshakeFunc(peer); err != nil {
 		return
